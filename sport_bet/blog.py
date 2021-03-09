@@ -7,8 +7,8 @@ from flask import request
 from flask import url_for
 from werkzeug.exceptions import abort
 
-from LDP.auth import login_required
-from LDP.db import get_db
+from sport_bet.auth import login_required
+from sport_bet.db import get_db
 
 bp = Blueprint("blog", __name__)
 

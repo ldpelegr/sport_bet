@@ -1,5 +1,5 @@
-include LDP/schema.sql
-graft LDP/static
-graft LDP/templates
+include sport_bet/schema.sql
+graft sport_bet/static
+graft sport_bet/templates
 graft tests
 global-exclude *.pyc

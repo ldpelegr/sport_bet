@@ -11,7 +11,7 @@ from flask import url_for
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
-from LDP.db import get_db
+from sport_bet.db import get_db
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 

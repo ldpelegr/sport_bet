@@ -10,7 +10,7 @@ def create_app(test_config=None):
         # a default secret that should be overridden by instance config
         SECRET_KEY="dev",
         # store the database in the instance folder
-        DATABASE=os.path.join(app.instance_path, "LDP.sqlite"),
+        DATABASE=os.path.join(app.instance_path, "sport_bet.sqlite"),
     )
 
     if test_config is None:
@@ -31,12 +31,12 @@ def create_app(test_config=None):
         return "Hello, World!"
 
     # register the database commands
-    from LDP import db
+    from sport_bet import db
 
     db.init_app(app)
 
     # apply the blueprints to the app
-    from LDP import auth, blog
+    from sport_bet import auth, blog
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(blog.bp)

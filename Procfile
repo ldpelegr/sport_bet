@@ -1,1 +1,1 @@
-web: gunicorn app:LDP
+web: gunicorn app:sport_bet
