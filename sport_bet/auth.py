@@ -70,7 +70,7 @@ def register():
             # the name is available, store it in the database and go to
             # the login page
             db.execute(
-                "INSERT INTO user (username, password) VALUES (?, ?)",
+                "INSERT INTO user (username, password, points) VALUES (?, ?, 100)",
                 (username, generate_password_hash(password)),
             )
             db.commit()
