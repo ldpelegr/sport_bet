@@ -52,11 +52,11 @@ def make_admin_command(username):
     """Allow specified user to create, update games."""
     db = get_db()
     db.execute(
-        "UPDATE user SET admin = 1 WHERE username = ?", username
+        "UPDATE user SET admin = 1 WHERE username = ?", (username,)
     )
     db.commit()
 
-    click.echo("User ? given admin privileges", username)
+    click.echo(f"User {username} given admin privileges")
 
 
 def init_app(app):
@@ -65,3 +65,4 @@ def init_app(app):
     """
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+    app.cli.add_command(make_admin_command)
