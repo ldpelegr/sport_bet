@@ -10,6 +10,7 @@ from flask import session
 from flask import url_for
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
+from werkzeug.exceptions import abort
 
 from sport_bet.db import get_db
 
@@ -114,3 +115,31 @@ def logout():
     """Clear the current session, including the stored user id."""
     session.clear()
     return redirect(url_for("index"))
+
+@bp.route("/<int:id>/user")
+def show_user(id):
+    """Get user by id.
+
+    Checks that the id exists
+
+    :param id: id of user to get
+    :param check_author: require the current user to be the author
+    :return: the user with information
+    :raise 404: if a game with the given id doesn't exist
+    :raise 403: if the current user isn't the author
+    """
+    user = (
+        get_db()
+        .execute(
+            " SELECT id, username, points, assets "
+            " FROM user "
+            " WHERE id = ?",
+            (id,),
+        )
+        .fetchone()
+    )
+
+    if user is None:
+        abort(404, f"User id {id} doesn't exist.")
+
+    return render_template("auth/user.html", user=user)

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}User Summary{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <article class="game">
+      <header>
+        <div>
+          <h1>{{ user['username'] }}</h1>
+          <div class="about">{{ user['points'] }}</div>
+        </div>
+      </header>
+      <p class="body">{{ user['assets'] }}</p>
+    </article>
+{% endblock %}

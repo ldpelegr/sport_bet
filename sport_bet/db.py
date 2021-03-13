@@ -45,6 +45,19 @@ def init_db_command():
     init_db()
     click.echo("Initialized the database.")
 
+@click.command("make-admin")
+@click.argument('username')
+@with_appcontext
+def make_admin_command(username):
+    """Allow specified user to create, update games."""
+    db = get_db()
+    db.execute(
+        "UPDATE user SET admin = 1 WHERE username = ?", username
+    )
+    db.commit()
+
+    click.echo("User ? given admin privileges", username)
+
 
 def init_app(app):
     """Register database functions with the Flask app. This is called by
