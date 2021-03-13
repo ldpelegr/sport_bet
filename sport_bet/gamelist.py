@@ -15,14 +15,14 @@ bp = Blueprint("gamelist", __name__)
 
 @bp.route("/")
 def index():
-    """Show all the posts, most recent first."""
+    """Show all the games, most recent first."""
     db = get_db()
-    posts = db.execute(
-        "SELECT p.id, title, body, created, author_id, username"
-        " FROM post p JOIN user u ON p.author_id = u.id"
-        " ORDER BY created DESC"
+    games = db.execute(
+        "SELECT p.id, title, body, tipoff, author_id, username"
+        " FROM game p JOIN user u ON p.author_id = u.id"
+        " ORDER BY tipoff DESC"
     ).fetchall()
-    return render_template("gamelist/index.html", posts=posts)
+    return render_template("gamelist/index.html", games=games)
 
 
 def get_game(id, check_author=True):
@@ -40,7 +40,7 @@ def get_game(id, check_author=True):
     game = (
         get_db()
         .execute(
-            "SELECT p.id, title, body, created, author_id, username"
+            "SELECT p.id, title, body, tipoff, author_id, username"
             " FROM game p JOIN user u ON p.author_id = u.id"
             " WHERE p.id = ?",
             (id,),
@@ -49,9 +49,9 @@ def get_game(id, check_author=True):
     )
 
     if game is None:
-        abort(404, f"Post id {id} doesn't exist.")
+        abort(404, f"Game id {id} doesn't exist.")
 
-    if check_author and game["author_id"] != g.user["id"]:
+    if check_author and g.user["admin"] == 0:
         abort(403)
 
     return game
@@ -60,9 +60,10 @@ def get_game(id, check_author=True):
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
 def create():
-    """Create a new post for the current user."""
+    """Create a new game for the current user."""
     if request.method == "POST":
         title = request.form["title"]
+        tipoff = request.form["tipoff"]
         body = request.form["body"]
         error = None
 
@@ -74,8 +75,8 @@ def create():
         else:
             db = get_db()
             db.execute(
-                "INSERT INTO post (title, body, author_id) VALUES (?, ?, ?)",
-                (title, body, g.user["id"]),
+                "INSERT INTO game (title, tipoff, body, author_id) VALUES (?, ?, ?, ?)",
+                (title, tipoff, body, g.user["id"]),
             )
             db.commit()
             return redirect(url_for("gamelist.index"))
@@ -86,12 +87,13 @@ def create():
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
 @login_required
 def update(id):
-    """Update a post if the current user is the author."""
-    post = get_post(id)
+    """Update a game if the current user is the author."""
+    game = get_game(id)
 
     if request.method == "POST":
         title = request.form["title"]
         body = request.form["body"]
+        tipoff = request.form["tipoff"]
         error = None
 
         if not title:
@@ -102,12 +104,12 @@ def update(id):
         else:
             db = get_db()
             db.execute(
-                "UPDATE post SET title = ?, body = ? WHERE id = ?", (title, body, id)
+                "UPDATE game SET title = ?, body = ?, tipoff = ? WHERE id = ?", (title, body, tipoff, id)
             )
             db.commit()
             return redirect(url_for("gamelist.index"))
 
-    return render_template("gamelist/update.html", post=post)
+    return render_template("gamelist/update.html", game=game)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))
